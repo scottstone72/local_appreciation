@@ -1,0 +1,437 @@
+<?php
+/**
+ *	Implements hook_permission().
+ */
+function local_app_permission() {
+  return array(
+    'view admin pages' => array(
+      'title' => 'Local Appreciation Rewards Program - Admin Section',
+      'description' => t('Provides access to the Local Appreciation admin section.'),
+      'restrict access' => TRUE,
+    ),
+    'view company rewards page' => array(
+      'title' => 'Local Appreciation Rewards Program Company Coupon Page',
+      'description' => t('Provides access to the Local Appreciation admin section.'),
+      'restrict access' => TRUE,
+    ),
+  );
+}
+
+
+/**
+ * Implements hook_menu().
+ */
+function local_app_menu() {
+  $items = array();
+
+  $items['local_app/admin'] = array(
+    'title' => 'Admin - Local Appreciation',
+    'page callback' => 'local_app_company_list',
+    'file' => 'local_app.company_list.inc',
+    'access arguments' => array('view admin pages'),
+  );
+  $items['local_app/admin/company_list'] = array(
+    'title' => 'Current Companies',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+    'access arguments' => array('view admin pages'),
+  );
+
+  // edit company
+  $items['local_app/admin/company_list/%ctools_js/edit/%'] = array(
+    'title' => 'Edit Coupon Value?',
+    'page callback' => 'local_app_edit_company',
+    'page arguments' => array(3,5),
+    'access callback' => TRUE,
+    'file' => 'local_app.edit_delete_company_popup.inc',
+    'type' => MENU_CALLBACK,
+  );
+  // delete company
+  $items['local_app/admin/company_list/%ctools_js/delete/%'] = array(
+    'title' => 'Delete this Company?',
+    'page callback' => 'local_app_delete_company',
+    'page arguments' => array(3,5),
+    'access callback' => TRUE,
+    'file' => 'local_app.edit_delete_company_popup.inc',
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['local_app/admin/add_company'] = array(
+    'title' => 'Add Company',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('local_app_add_company_form'),
+    'access arguments' => array('view admin pages'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => -9,
+  );
+
+  $items['local_app/admin/customer_list'] = array(
+    'title' => 'Current Users',
+    'page callback' => 'local_app_customer_list',
+    'type' => MENU_LOCAL_TASK,
+    'access arguments' => array('view admin pages'),
+    'file' => 'local_app.customer_list.inc',
+    'weight' => -7,
+  );
+  // edit user
+  $items['local_app/admin/customer_list/%ctools_js/edit/%'] = array(
+    'title' => 'Edit this User?',
+    'page callback' => 'local_app_edit_user',
+    'page arguments' => array(3,5),
+    'access callback' => TRUE,
+    'file' => 'local_app.edit_delete_customer_popup.inc',
+    'type' => MENU_CALLBACK,
+  );
+  // delete user
+  $items['local_app/admin/customer_list/%ctools_js/delete/%'] = array(
+    'title' => 'Delete this User?',
+    'page callback' => 'local_app_delete_user',
+    'page arguments' => array(3,5),
+    'access callback' => TRUE,
+    'file' => 'local_app.edit_delete_customer_popup.inc',
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['local_app/admin/add_user'] = array(
+    'title' => 'Add User',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('local_app_user_register_form'),
+    'type' => MENU_LOCAL_TASK,
+    'access arguments' => array('view admin pages'),
+    'weight' => -5,
+  );
+
+  $items['local_app/choose_company_coupon'] = array(
+    'title' => 'Crystal Metz Local Appreciation Coupons',
+    'page callback' => 'local_app_choose_company_coupon',
+    'access arguments' => array('view company rewards page'),
+    'file' => 'local_app.choose_company_coupon.inc',
+    //'type' => MENU_SUGGESTED_ITEM,
+  );
+  $items['local_app/choose_company_coupon/%ctools_js/%'] = array(
+    'title' => 'Is this you Choice?',
+    'page callback' => 'local_app_choose_coupon',
+    'page arguments' => array(2,3),
+    'access callback' => TRUE,
+    'file' => 'local_app.choose_company_coupon.inc',
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+/**
+ * Prepare a simple form to add local_app users
+ */
+function local_app_user_register_form($form, &$form_state){
+  // Check if user has permission to access this page.
+  if(!user_access('view admin pages')) {
+    return MENU_ACCESS_DENIED;
+  }
+  // load the custom css file for module
+  ctools_add_css('local_app','local_app','css');
+
+  $form['container'] = array(
+    '#title' => 'Enter a New User',
+    '#type' => 'fieldset',
+    '#required' => TRUE,
+    //'#value' => 'Stacey',
+  );
+  $form['container']['first_name'] = array(
+      '#title' => 'First Name',
+      '#type' => 'textfield',
+      '#required' => TRUE,
+      //'#value' => 'Stacey',
+    );
+    $form['container']['last_name'] = array(
+      '#title' => 'Last Name',
+      '#type' => 'textfield',
+      '#required' => TRUE,
+      //'#value' => 'Steele',
+    );
+//    $form['container']['user_name'] = array(
+//      '#title' => 'Username',
+//      '#description' => 'Choose a username.',
+//      '#type' => 'textfield',
+//      '#required' => TRUE,
+//      //'#value' => 'my_sweety',
+//    );
+//      $form['container']['user_name'] = array(
+//      '#type' => 'hidden',
+//      '#value' => '',
+//    );
+    $form['container']['local_app_pass'] = array(
+      '#title' => 'Password',
+      '#description' => 'Enter a password.',
+      '#type' => 'textfield',
+      '#required' => TRUE,
+      '#attributes' => array('id' => 'local-app-pass'),
+      //'#value' => 'awesome',
+    );
+    $form['container']['mail'] = array(
+      '#title' => 'Email',
+      '#description' => 'Enter a valid email address.',
+      '#type' => 'textfield',
+      '#required' => TRUE,
+      //'#value' => 'stacey@steele.com',
+    );
+    $form['container']['account_bal'] = array(
+      '#title' => 'Account Balance',
+      '#description' => 'Enter dollar($) amount.',
+      '#default_value' => number_format(0.00,2),
+      '#type' => 'textfield',
+      '#required' => TRUE,
+      //'#value' => 20.00,
+    );
+  $form['container']['customer_info'] = array(
+    '#title' => 'Customer Info',
+    '#type' => 'textarea',
+    '#rows' => 3,
+    '#cols' => 54,
+    //'#value' => 20.00,
+  );
+    $form['container']['submit'] = array(
+      '#type' => 'submit',
+      '#value' => t('Add User'),
+    );
+
+  return $form;
+}
+
+/**
+ * Validate for registering new user
+ */
+function local_app_user_register_form_validate($form,&$form_state) {
+  // We need to make sure there are no duplicate values entered.
+  $result =db_select('users','u')
+    ->fields('u', array('uid','name','mail','first_name','last_name'))
+    ->condition('uid', 1, '>')
+    ->execute();
+
+  foreach ($result as $value) {
+    //$first_name = NULL;
+
+    //$name = $value->name;
+    $first_name = $value->first_name;
+    $last_name = $value->last_name;
+    $email = $value->mail;
+
+//    if ($name !== $form_state['values']['user_name']) {
+//      $form_state['values']['user_name'] = check_plain($form_state['values']['user_name']);
+//    } else {
+//      form_set_error('user_name','You have entered a username that already exists in the database. Please select another username.');
+//    }
+
+    if ($email !== $form_state['values']['mail']) {
+      $form_state['values']['mail'] = check_plain($form_state['values']['mail']);
+    } else {
+      form_set_error('mail','There is currently a user with the same email already registered. Please select another email.');
+    }
+
+    if ($first_name == $form_state['values']['first_name'] && $last_name == $form_state['values']['last_name']) {
+      form_set_error('first_name','You have entered a user that already exists in the database. Please select another username.');
+      //form_set_error('last_name','You have entered a user that already exists in the database. Please select another username.');
+    } else {
+      $form_state['values']['first_name'] = check_plain($form_state['values']['first_name']);
+      $form_state['values']['last_name'] = check_plain($form_state['values']['last_name']);
+    }
+  }
+}
+/**
+ * Submit for registering new user.
+ */
+function local_app_user_register_form_submit($form,&$form_state) {
+  global $user;
+  $edit = array(
+    'name' => $form_state['values']['mail'],
+    'pass' => user_password(),
+    'mail' => $form_state['values']['mail'],
+    'init' => $form_state['values']['mail'],
+    'status' => 1,
+    'access' => REQUEST_TIME,
+    'language' => 'und',
+    // Adding extra fields
+    'first_name' => $form_state['values']['first_name'],
+    'last_name' => $form_state['values']['last_name'],
+    'account_bal' => $form_state['values']['account_bal'],
+    'customer_notes' => $form_state['values']['customer_info'],
+  );
+  // Save the user to the users table
+  user_save(drupal_anonymous_user(), $edit);
+
+  $date = date('Y-m-d h:i:s');
+  // Send email to administrator notifying him of request.
+  $to = $form_state['values']['mail'];
+  $from = $user->mail;
+
+  $params['date'] = $date;
+  $params['first_name'] = $form_state['values']['first_name'];
+  $params['last_name'] =  $form_state['values']['last_name'];
+  $params['user_name'] =  $form_state['values']['mail'];
+  $params['local_app_pass'] = $form_state['values']['local_app_pass'];
+  $params['account_bal'] = $form_state['values']['account_bal'];
+
+
+  $sent = drupal_mail('local_app', 'new_user', $to, language_default(), $params, $from, TRUE);
+  // Show error if mail does not get sent for whatever reason.
+  if(!$sent) {
+    drupal_set_message(t('An error occurred and admin mail was not sent. Please notify administrator.'), 'error');
+  }
+
+  // Show a message to user confirming customer edits.
+//  $form_state['ajax_commands'][] = ajax_command_after('ul.tabs.primary',
+//    "<div class='user-message'><strong>New user @fname @lname has successfully been added with $@account added to their account.</strong></div>",
+//        array('@fname' => $form_state['values']['first_name'], '@lname' => $form_state['values']['last_name'], '@account' => $form_state['values']['account_bal']));
+//ajax_render($form_state['ajax_commands']);
+  drupal_set_message(t('New user @fname @lname has successfully been added with $@account added to their account.',
+    array('@fname' => $form_state['values']['first_name'], '@lname' => $form_state['values']['last_name'],
+      '@account' => $form_state['values']['account_bal'])));
+}
+
+/**
+ * Implements hook_mail()
+ * Using to send email from transfer request submissions to administrator
+ * @param $key
+ * @param $message
+ * @param $params
+ *
+ */
+function local_app_mail($key, &$message, $params) {
+  $language = $message['language'];
+  switch ($key) {
+    case 'new_user':
+      $vars = array();
+      $date = $params['date'];
+      $first_name = $params['first_name'];
+      $last_name = $params['last_name'];
+      $user_name = $params['user_name'];
+      $local_app_pass = $params['local_app_pass'];
+      $account_bal = $params['account_bal'];
+
+      $message['subject'] = t('Crystal Metz Local Appreciation Rewards Program', $vars, array($language->language));
+      $message['body'][] = t("Date: @date<br/><br/>Hi @first_name @last_name you have been signed up to be in the Crystal Metz Local Appreciation Rewards Program with a starting account balance of $@account_bal. " . '<br/>' .
+        "You can go to the Crystal Metz Local Rewards Program website by clicking the link below with the following username and password." . '<br/>' .
+        "UserName: @user_name " . '<br/>' .
+        "Password: @local_app_pass " . '<br/>' .
+        "Thanks for your participation now go and start spending your rewards money on local participating company coupons.", array('@first_name' => $first_name, '@last_name' => $last_name,
+          '@user_name' => $user_name, '@local_app_pass' => $local_app_pass, '@account_bal' => $account_bal, '@date' => $date)) . '<br/>' .
+        l('Login ','http://localapp.wwwssr1.supercp.com/');
+      break;
+
+    case 'edit_user':
+      $vars = array();
+      $date = $params['date'];
+      $first_name = $params['first_name'];
+      $last_name = $params['last_name'];
+      $user_name = $params['user_name'];
+      $local_app_pass = $params['local_app_pass'];
+      $account_bal = $params['account_bal'];
+
+      $message['subject'] = t('Crystal Metz Local Appreciation Rewards Program', $vars, array($language->language));
+      $message['body'][] = t("Date: @date<br/><br/>Hi @first_name @last_name your user account has been reset for the Crystal Metz Local Appreciation Rewards Program with an account balance of $@account_bal. " . '<br/>' .
+          "You can go to the Crystal Metz Local Rewards Program website by clicking the link below with the following username and password." . '<br/>' .
+          "UserName: @user_name " . '<br/>' .
+          "Password: @local_app_pass " . '<br/>' .
+          "Thanks for your participation now go and start spending your rewards money on local participating company coupons.", array('@first_name' => $first_name, '@last_name' => $last_name,
+            '@user_name' => $user_name, '@local_app_pass' => $local_app_pass, '@account_bal' => $account_bal, '@date' => $date)) . '<br/>' .
+        l('Login ','http://localapp.wwwssr1.supercp.com/');
+      break;
+  }
+}
+
+
+
+
+
+/**
+ * Prepare a simple form to add an entry, with all the interesting fields.
+ */
+function local_app_add_company_form($form, &$form_state) {
+  // Check if user has permission to access this page.
+  if(!user_access('view admin pages')) {
+    return MENU_ACCESS_DENIED;
+  }
+  // load the custom css file for module
+  ctools_add_css('local_app','local_app','css');
+
+  $form['add'] = array(
+    '#title' => t('Add a Company'),
+    '#type'  => 'fieldset',
+  );
+  $form['add']['company_name'] = array(
+    '#title' => t('Name'),
+    '#type'  => 'textfield',
+    '#length'  => 60,
+  );
+
+  // Use the #managed_file FAPI element to upload an image file.
+  $form['add']['company_image_fid'] = array(
+    '#title' => t('Image'),
+    '#type' => 'managed_file',
+    '#description' => t('Upload company image or logo.'),
+    '#default_value' => '',
+    '#upload_location' => 'public://',
+  );
+  $form['add']['coupon_value'] = array(
+    '#title' => t('Coupon Value'),
+    '#type'  => 'textfield',
+    '#size'  => 20,
+    '#field_prefix' => '$',
+    '#description' => t('Enter coupon amount in dollars.'),
+  );
+  $form['add']['submit'] = array(
+    '#type'  => 'submit',
+    '#value' => t('Save'),
+  );
+
+  return $form;
+}
+/**
+ * Verifies that the user supplied an image with the form..
+ */
+function local_app_add_company_form_validate($form, &$form_state) {
+  if (!isset($form_state['values']['company_image_fid']) || !is_numeric($form_state['values']['company_image_fid'])) {
+    form_set_error('company_image_fid', t('Please select an image to upload.'));
+  }
+}
+/**
+ * Form Builder; Display a form for uploading an image.
+ */
+function local_app_add_company_form_submit($form, &$form_state) {
+  // When using the #managed_file form element the file is automatically
+  // uploaded an saved to the {file} table. The value of the corresponding
+  // form element is set to the {file}.fid of the new file.
+  $file = new stdClass();
+  // If fid is not 0 we have a valid file.
+  if ($form_state['values']['company_image_fid'] != 0) {
+    // The new file's status is set to 0 or temporary and in order to ensure
+    // that the file is not removed after 6 hours we need to change it's status
+    // to 1. Save the ID of the uploaded image for later use.
+    $file = file_load($form_state['values']['company_image_fid']);
+
+    $file->status = FILE_STATUS_PERMANENT;
+    file_save($file);
+    // When a module is managing a file, it must manage the usage count.
+    // Here we increment the usage count with file_usage_add().
+    //file_usage_add($file, 'local_app', 'company_image', 1);
+  $insert = db_insert('local_app_company')
+    ->fields(array(
+      'company_name' => $form_state['values']['company_name'],
+      'image_path' => $file->uri,
+      'image_file_id' => $form_state['values']['company_image_fid'],
+      'coupon_value' => $form_state['values']['coupon_value'],
+    ));
+
+    $insert->execute();
+  }
+  // Set a message for the user to see.
+  drupal_set_message(t('@name has been saved and set with a $@coupon coupon value.',
+    array(
+      '@name' => $form_state['values']['company_name'],
+      '@coupon' => $form_state['values']['coupon_value'],
+    )
+  ));
+}
+
+
+

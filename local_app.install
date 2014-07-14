@@ -1,0 +1,119 @@
+<?php
+/**
+ * Install file for local_app module
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function local_app_schema() {
+// Install schema for storing companies that participate.
+$schema['local_app_company'] = array(
+  'description' => 'Storing Company Info.',
+  'fields' => array(
+    'id' => array(
+      'description' => 'Primary Id for table.',
+      'type' => 'serial',
+      'not null' => TRUE,
+    ),
+    'company_name' => array(
+      'description' => 'Company Name.',
+      'type' => 'varchar',
+      'length' => 255,
+      'default' => '',
+      'not null' => TRUE,
+    ),
+    'image_path' => array(
+      'description' => 'Path to image folder.',
+      'type' => 'varchar',
+      'length' => 255,
+      'default' => '',
+      'not null' => TRUE,
+    ),
+    'image_file_id' => array(
+      'description' => 'Image file ID (fid)',
+      'type' => 'varchar',
+      'length' => 255,
+      'default' => '',
+      'not null' => TRUE,
+    ),
+    'coupon_value' => array(
+      'description' => 'Value of company coupon.',
+      'type' => 'numeric',
+      'not null' => TRUE,
+      'precision' => 10,
+      'scale' => 2,
+    ),
+  ),
+  'primary key' => array('id'),
+  'indexes' => array(
+    'company_name' => array('company_name'),
+  ),
+);
+  return $schema;
+}
+
+/**
+ * implements hook_install().
+ */
+function local_app_install() {
+  $schema = drupal_get_schema('users');
+  db_add_field('users', 'first_name', $schema['fields']['first_name']);
+  db_add_field('users', 'last_name', $schema['fields']['last_name']);
+  db_add_field('users', 'account_bal', $schema['fields']['account_bal']);
+  db_add_field('users', 'customer_notes', $schema['fields']['customer_notes']);
+}
+/**
+ * This used hook_schema_alter()
+ * Modifying the user registration form adding a few extra fields we need.
+ */
+function local_app_schema_alter(&$schema) {
+  $schema['users']['fields']['first_name'] = array(
+    'type' => 'varchar',
+    'length' => 60,
+    'not null' => TRUE,
+    'default' => '',
+    'description' => 'User first name.',
+  );
+  $schema['users']['fields']['last_name'] = array(
+    'type' => 'varchar',
+    'length' => 60,
+    'not null' => TRUE,
+    'default' => '',
+    'description' => 'User first name.',
+  );
+  $schema['users']['fields']['account_bal'] = array(
+    'type' => 'numeric',
+    'not null' => TRUE,
+    'precision' => 10,
+    'scale' => 2,
+    'default' => 0.00,
+    'description' => 'Users account balance.',
+  );
+  $schema['users']['fields']['customer_notes'] = array(
+    'type' => 'varchar',
+    'length' => 255,
+    'not null' => TRUE,
+    'default' => '',
+    'description' => 'Customer Info.',
+  );
+
+  return $schema;
+}
+/*
+ * Implements hook_update_N().
+ */
+function local_app_update_7000() {
+  drupal_install_schema('local_app_company');
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function local_app_uninstall() {
+  variable_del('local_app_company_image_fid');
+  db_drop_field('users', 'first_name');
+  db_drop_field('users', 'last_name');
+  db_drop_field('users', 'account_bal');
+  db_drop_field('users', 'customer_notes');
+}

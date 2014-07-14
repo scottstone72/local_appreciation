@@ -1,0 +1,219 @@
+
+/*@import url(http://fonts.googleapis.com/css?family=Lato:400,700);*/
+
+/* This bit of css is for disabling the ajax throbber */
+.ajax-progress, .ajax-progress-throbber {
+    display: none;
+}
+
+form#local-app-edit-company-form label {
+    float: none;
+}
+
+h1#page-title {
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+    font-size: 1.6em;
+    text-align: center;
+    color: #ffffff;
+    padding: 10px;
+    background-color: #5E2B88;
+
+}
+h2#customer-info {
+    padding-left: 0;
+    color: #000;
+    font-weight: 400;
+}
+
+div#slogan {
+    margin-bottom: 5px;
+}
+
+div#local-app-customer-message {
+    font-family: 'Lato', sans-serif;
+    color: #000;
+}
+
+a.ctools-close-modal {
+    padding-left: 10px;
+}
+a.ctools-modal-local-app-choose-coupon-modal-style {
+    font-family: 'Lato', sans-serif;
+    font:  100%/1.4;
+    color: #000;
+}
+
+div.ctools-modal-content .modal-header {
+    background-color: #5e2b88;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+div.ctools-modal-content .modal-header #close-modal-button {
+    margin-right: 5px;
+}
+
+a:link {
+    color: #9370DB;
+    text-decoration: underline; /* unless you style your links to look extremely unique, it's best to provide underlines for quick visual identification */
+}
+a:visited {
+    color: #9370DB;
+    text-decoration: underline;
+}
+a:hover, a:active, a:focus { /* this group of selectors will give a keyboard navigator the same hover experience as the person using a mouse. */
+    text-decoration: none;
+}
+/*table tr.odd,table tr.even {*/
+    /*background-color: rgba(232, 215, 240, 0.68);*/
+/*}*/
+table tr.odd {
+    background-color: rgba(232, 215, 240, 0.68);
+}
+table tr.even {
+    background-color: rgba(234, 204, 255, 0.68);
+}
+
+ul.tabs.primary li a,
+/*input#edit-submit,*/
+input[type="submit"] {
+border: 1px black solid;
+padding: 7px 10px;
+box-shadow: 1px 1px 5px #080808;
+background-color: #cccccc;
+    border-radius: 20px;
+    -moz-border-radius: 20px;
+    -webkit-border-radius: 20px;
+}
+
+ul.tabs.primary li.active a {
+    background-color: mediumpurple;
+    box-shadow: 1px 1px 1px #080808;
+}
+
+ul.tabs.primary li a:hover,
+/*input#edit-submit:hover*/
+input[type="submit"]:hover {
+    background-color: mediumpurple;
+    box-shadow: 1px 1px 1px #080808;
+}
+
+fieldset.form-wrapper legend span.fieldset-legend {
+    color: #000;
+}
+tbody {
+    border-left: 1px solid #000;
+    border-right: 1px solid #000;
+}
+div.user-message {
+    color: #2c0037;
+    margin-bottom: 20px;
+    border: 2px solid #2c0037;
+    padding: 10px;
+    background-color: #e9d7ff;
+}
+thead {
+    background-color: #9a77e1;
+}
+.contentbin {
+    background-color: rgba(136, 136, 135, 0.70);
+}
+
+.form-item-first-name,
+.form-item-last-name,
+.form-item-local-app-pass, .form-item-account-bal {
+    float: left;
+}
+
+.form-item-mail {
+    /*clear: left;*/
+    float: left;
+}
+input#edit-submit {
+    clear: left;
+    float: left;
+}
+div.form-item-customer-info {
+    clear: left;
+    float: left;
+    margin-top: .5em;
+    border: 1px solid #000;
+    /*padding-top: 1em;*/
+}
+
+label[for="edit-customer-info"] {
+    background-color: #5E2B88;
+    padding: 3px 0 3px 0;
+    color: #FFF;
+    font-weight: 400;
+    font-size: .8em;
+    text-align: center;
+}
+textarea#edit-customer-info, textarea#edit-customer-notes {
+    background-color: #e9d7ff;
+}
+
+form#local-app-user-register-form div.form-item {
+    margin-top: 0;
+    margin-bottom: .5em;
+}
+
+#modalContent .form-item-first-name,
+#modalContent .form-item-last-name,
+#modalContent .form-item-local-app-pass,
+#modalContent .form-item-account-bal {
+    float: none;
+}
+#modalContent .form-item-user-name,
+#modalContent .form-item-mail {
+    clear: none;
+    float: none;
+}
+#modalContent input#edit-submit {
+    clear: none;
+    float: none;
+}
+img#company-modal-image {
+    padding-top: 1em;
+}
+input[type="text"] {
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    padding: 2px 2px 2px 5px;
+    border: 1px solid #000;
+}
+div#modalContent {
+    padding-bottom: 50px;
+    top: 200px;
+    /*max-width: 460px;*/
+}
+div#modal-content {
+    /*margin-top: 0;*/
+    padding-top: 0;
+    /*max-width: 460px;*/
+}
+div.ctools-modal-content .resizable-textarea {
+    margin-right: 0;
+    margin-left: 0;
+    width: 400px;
+}
+
+textarea {
+    font-family: 'Lato', sans-serif;
+}
+/*div.ctools-modal-content {*/
+    /*max-width: 460px;*/
+/*}*/
+/*form#local-app-edit-user-form {*/
+    /*max-width: 460px;*/
+/*}*/
+/*div#modalBackdrop {*/
+    /*background: black;*/
+    /*opacity: 0.6;*/
+/*}*/
+p {
+    padding-top: 10px;
+    text-align: left;
+}

@@ -1,0 +1,5 @@
+name = Local Appreciation
+description = For setting up and giving clients access to special reward points
+core = 7.x
+
+dependencies[] = ctools
